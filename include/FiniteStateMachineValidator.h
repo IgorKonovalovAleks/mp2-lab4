@@ -28,22 +28,314 @@ public:
 
 FSMValidator::FSMValidator() : state(States::START) {}
 
-bool FSMValidator::brackets(const char* s) {}
+bool FSMValidator::brackets(const char* s) {
+	int c1 = 0;
+	char c = s[0];
+	for (int i = 0; s[i] != '\0'; c = s[i]) {
+		i++;
+		if (c == '(')
+			c1++;
+		else if (c == ')')
+			if (c1 == 0)
+				return false;
+			else
+				c1--;
 
-void FSMValidator::push(int i) {}
+	}
 
-int FSMValidator::findType(const char i) {}
+	if (c1 == 0)
+		return true;
+	else
+		return false;
 
-int FSMValidator::start(const char i, int c) {}
+}
 
-int FSMValidator::afterOperator(const char i, int c) {}
+void FSMValidator::push(int i) {
+	res.push(i);
+}
 
-int FSMValidator::firstPart(const char i, int c) {}
+int FSMValidator::findType(const char i) {
 
-int FSMValidator::secondPart(const char i, int c) {}
+	for (char a : dec) {
+		if (a == i)
+			return Chars::DECIMAL;
+	}
 
-int FSMValidator::afterCloseBracket(const char i, int c) {}
+	for (char a : opb) {
+		if (a == i)
+			return Chars::OPEN_BRACKET;
+	}
 
-int FSMValidator::end(const char i, int c) {}
+	for (char a : clb) {
+		if (a == i)
+			return Chars::CLOSE_BRACKET;
+	}
 
-void FSMValidator::validate(const char* str, std::queue<int>& r) {}
+	for (char a : min) {                        //minus before operator is essential
+		if (a == i)
+			return Chars::MINUS;
+	}
+
+	for (char a : ops) {
+		if (a == i)
+			return Chars::OPERATOR;
+	}
+
+	for (char a : dot) {
+		if (a == i)
+			return Chars::DOT;
+	}
+
+	for (char a : sps) {
+		if (a == i)
+			return Chars::SPACE;
+	}
+
+}
+
+int FSMValidator::start(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		return States::START;
+
+	case Chars::OPEN_BRACKET:
+		push(c);
+		return States::START;
+
+	case Chars::MINUS:
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::DECIMAL:
+		push(c);
+		return States::FIRST_PART;
+
+	case Chars::DOT:
+		push(c);
+		return States::SECOND_PART;
+
+	default:
+		return States::FAIL;
+
+	}
+}
+
+int FSMValidator::afterOperator(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		return States::AFTER_OPERATOR;
+
+	case Chars::OPEN_BRACKET:
+		push(c);
+		return States::START;
+
+	case Chars::DECIMAL:
+		push(c);
+		return States::FIRST_PART;
+
+	case Chars::DOT:
+		push(c);
+		return States::SECOND_PART;
+
+	default:
+		return States::FAIL;
+
+	}
+}
+
+int FSMValidator::firstPart(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		push(c - 1);
+		return States::END;
+
+	case Chars::OPEN_BRACKET:
+		push(c - 1);
+		push(c);
+		return States::START;
+
+	case Chars::DECIMAL:
+		return States::FIRST_PART;
+
+	case Chars::DOT:
+		return States::SECOND_PART;
+
+	case Chars::OPERATOR:
+		push(c - 1);
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::MINUS:
+		push(c - 1);
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::CLOSE_BRACKET:
+		push(c - 1);
+		push(c);
+		return States::AFTER_CLOSE_BRACKET;
+
+	default:
+		return States::FAIL;
+
+	}
+
+}
+
+int FSMValidator::secondPart(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		push(c - 1);
+		return States::END;
+
+	case Chars::OPEN_BRACKET:
+		push(c - 1);
+		push(c);
+		return States::START;
+
+	case Chars::OPERATOR:
+		push(c - 1);
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::MINUS:
+		push(c - 1);
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::DECIMAL:
+		return States::SECOND_PART;
+
+	case Chars::CLOSE_BRACKET:
+		push(c - 1);
+		push(c);
+		return States::AFTER_CLOSE_BRACKET;
+
+	default:
+		return States::FAIL;
+
+	}
+
+}
+
+int FSMValidator::afterCloseBracket(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		return States::AFTER_CLOSE_BRACKET;
+
+	case Chars::OPERATOR:
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::MINUS:
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	default:
+		return States::FAIL;
+
+	}
+}
+
+int FSMValidator::end(const char i, int c) {
+	int type = findType(i);
+	//std::cout << " /" << type << "/ ";
+	switch (type)
+	{
+
+	case Chars::SPACE:
+		return States::END;
+
+	case Chars::OPEN_BRACKET:
+		push(c);
+		return States::START;
+
+	case Chars::OPERATOR:
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::MINUS:
+		push(c);
+		return States::AFTER_OPERATOR;
+
+	case Chars::CLOSE_BRACKET:
+		push(c);
+		return States::AFTER_CLOSE_BRACKET;
+
+	default:
+		return States::FAIL;
+
+	}
+}
+
+void FSMValidator::validate(const char* str, std::queue<int>& r) {
+
+	if (!brackets(str)) {
+		throw std::exception();
+	}
+
+	state = States::START;
+	for (int i = 0; str[i] != '\0'; i++) {
+
+
+		switch (state)
+		{
+		case States::START:
+			state = start(str[i], i);
+			break;
+
+		case States::FIRST_PART:
+			state = firstPart(str[i], i);
+			break;
+
+		case States::SECOND_PART:
+			state = secondPart(str[i], i);
+			break;
+
+		case States::AFTER_OPERATOR:
+			state = afterOperator(str[i], i);
+			break;
+
+		case States::END:
+			state = end(str[i], i);
+			break;
+
+		case States::AFTER_CLOSE_BRACKET:
+			state = afterCloseBracket(str[i], i);
+			break;
+
+		case States::FAIL:
+			throw std::exception();
+
+
+		}
+	}
+
+	if (state == States::AFTER_OPERATOR) {
+		throw std::exception();
+	}
+
+	r = res;
+
+
+}
