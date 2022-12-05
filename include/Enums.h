@@ -31,7 +31,8 @@ enum Chars {
 	DOT,
 	OPEN_BRACKET,
 	CLOSE_BRACKET,
-	MINUS
+	MINUS,
+	NOT_VALID
 };
 
 enum TokenPrio {       //priorities

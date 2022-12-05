@@ -77,7 +77,7 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 				break;
 			}
 
-			if (operators.top().prio > TokenPrio::MINUS_) {
+			if (!operators.empty() && operators.top().prio > TokenPrio::MINUS_) {
 				for (Token j = operators.top(); j.prio > TokenPrio::MINUS_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
@@ -89,7 +89,7 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 
 		case '*':
 			//std::cout << "case *\n";
-			if (operators.top().prio > TokenPrio::MULTIPLY_) {
+			if (!operators.empty() && operators.top().prio > TokenPrio::MULTIPLY_) {
 				for (Token j = operators.top(); j.prio > TokenPrio::MULTIPLY_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
@@ -100,7 +100,7 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 
 		case '/':
 			//std::cout << "case /\n";
-			if (operators.top().prio > TokenPrio::DIVIDE_) {
+			if (!operators.empty() && operators.top().prio > TokenPrio::DIVIDE_) {
 				for (Token j = operators.top(); j.prio > TokenPrio::DIVIDE_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);

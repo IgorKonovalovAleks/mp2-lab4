@@ -91,6 +91,8 @@ int FSMValidator::findType(const char i) {
 			return Chars::SPACE;
 	}
 
+	return Chars::NOT_VALID;
+
 }
 
 int FSMValidator::start(const char i, int c) {
@@ -266,10 +268,6 @@ int FSMValidator::end(const char i, int c) {
 	case Chars::SPACE:
 		return States::END;
 
-	case Chars::OPEN_BRACKET:
-		push(c);
-		return States::START;
-
 	case Chars::OPERATOR:
 		push(c);
 		return States::AFTER_OPERATOR;
@@ -295,7 +293,8 @@ void FSMValidator::validate(const char* str, std::queue<int>& r) {
 	}
 
 	state = States::START;
-	for (int i = 0; str[i] != '\0'; i++) {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
 
 
 		switch (state)
@@ -331,7 +330,10 @@ void FSMValidator::validate(const char* str, std::queue<int>& r) {
 		}
 	}
 
-	if (state == States::AFTER_OPERATOR) {
+	if (state == States::FIRST_PART || state == States::SECOND_PART)
+		push(i - 1);
+
+	if (state == States::AFTER_OPERATOR || state == States::FAIL) {
 		throw std::exception();
 	}
 
