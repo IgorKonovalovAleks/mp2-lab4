@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 #include "FiniteStateMachineValidator.h"
 #include "PrefixFormer.h"
 
@@ -17,6 +18,7 @@ public:
 	Expression(const char* s);
 	double calculate();
 	static double parseNumber(Token number);
+	double ask(Token& name);
 
 };
 
@@ -26,6 +28,17 @@ Expression::Expression(const char* s) : source(s) {
 	std::queue<int> tokens;
 	fsmv.validate(s, tokens);
 	pf.buildPrefix(s, tokens);
+}
+
+double Expression::ask(Token& name) {
+	double r;
+	std::cout << "Enter a value of: ";
+	for (int i = 0; i < name.len; i++) {
+		std::cout << name.val[i];
+	}
+	std::cout << '\n';
+	std::cin >> r;
+	return r;
 }
 
 double Expression::parseNumber(Token number) {
@@ -60,43 +73,76 @@ double Expression::calculate() {
 	double a;
 	while (!pf.empty()) {
 		cur = pf.getNext();
-		switch (cur.prio)
+		//std::cout << cur.id;
+		switch (cur.id)
 		{
-		case TokenPrio::NUMBER_:
+
+		case TokenId::VAR:
+			numbers.push(ask(cur));
+			break;
+
+		case TokenId::NUMBER:
 			numbers.push(parseNumber(cur));
 			break;
 
-		case TokenPrio::PLUS_:
+		case TokenId::PLS:
 			b = numbers.top();
 			numbers.pop();
 			a = numbers.top();
 			numbers.pop();
-			if (cur.val[0] == '+')
-				numbers.push(a + b);
-			else
-				numbers.push(a - b);
+			numbers.push(a + b);
 			break;
 
-
-
-		case TokenPrio::MULTIPLY_:
+		case TokenId::MIN:
 			b = numbers.top();
 			numbers.pop();
 			a = numbers.top();
 			numbers.pop();
-			if (cur.val[0] == '*')
-				numbers.push(a * b);
-			else
-				numbers.push(a / b);
+			numbers.push(a - b);
 			break;
 
-		case TokenPrio::UNARY_MINUS_:
+		case TokenId::MUL:
+			b = numbers.top();
+			numbers.pop();
+			a = numbers.top();
+			numbers.pop();
+			numbers.push(a * b);
+			break;
+
+		case TokenId::DIV:
+			b = numbers.top();
+			numbers.pop();
+			a = numbers.top();
+			numbers.pop();
+			numbers.push(a / b);
+			break;
+
+		case TokenId::U_MIN:
 			b = numbers.top();
 			numbers.pop();
 			numbers.push(-b);
 			break;
 
+		case TokenId::SIN:
+			b = numbers.top();
+			numbers.pop();
+			numbers.push(std::sin(b));
+			break;
+
+		case TokenId::LOG:
+			b = numbers.top();
+			numbers.pop();
+			numbers.push(std::log(b));
+			break;
+
+		case TokenId::EXP:
+			b = numbers.top();
+			numbers.pop();
+			numbers.push(std::exp(b));
+			break;
+
 		}
+		//std::cout << numbers.size();
 	}
 
 	return numbers.top();

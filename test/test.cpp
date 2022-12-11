@@ -31,9 +31,24 @@ TEST(Expression, throws_when_number_after_number)
 	ASSERT_ANY_THROW(Expression e("12 .12"));
 }
 
+TEST(Expression, throws_when_name_after_number)
+{
+	ASSERT_ANY_THROW(Expression e("12 asd"));
+}
+
+TEST(Expression, throws_when_number_after_name)
+{
+	ASSERT_ANY_THROW(Expression e("asdashjd .12"));
+}
+
+TEST(Expression, throws_when_name_after_name)
+{
+	ASSERT_ANY_THROW(Expression e("12 .12"));
+}
+
 TEST(Expression, throws_when_invalid_letters_are_present)
 {
-	ASSERT_ANY_THROW(Expression e("f + 3"));
+	ASSERT_ANY_THROW(Expression e("./ + 3"));
 }
 
 TEST(Expression, throws_when_bracket_after_number)
@@ -69,31 +84,49 @@ TEST(Expression, throws_when_ends_with_operator)
 TEST(Expression, sum_works_correctly)
 {
 	Expression e("4 + 3");
-	ASSERT_EQ(e.calculate(), 7);
+	ASSERT_EQ(7, e.calculate());
 }
 
 TEST(Expression, substract_works_correctly)
 {
 	Expression e("4 - 3");
-	ASSERT_EQ(e.calculate(), 1);
+	ASSERT_EQ(1, e.calculate());
 }
 
 TEST(Expression, mulpiplication_works_correctly)
 {
 	Expression e("4 * 3");
-	ASSERT_EQ(e.calculate(), 12);
+	ASSERT_EQ(12, e.calculate());
 }
 
 TEST(Expression, division_works_correctly)
 {
 	Expression e("4 / 3");
-	ASSERT_EQ(e.calculate(), 4.0/3.0);
+	ASSERT_EQ(4.0 / 3.0, e.calculate());
 }
 
 TEST(Expression, unary_minus_works_correctly)
 {
 	Expression e("-3");
-	ASSERT_EQ(e.calculate(), -3);
+	ASSERT_EQ(-3, e.calculate());
+}
+
+TEST(Expression, log_works_correctly)
+{
+	Expression e("log 3");
+	ASSERT_EQ(std::log(3), e.calculate());
+}
+
+TEST(Expression, sin_works_correctly)
+{
+	Expression e("sin 3");
+	ASSERT_EQ(std::sin(3), e.calculate());
+}
+
+TEST(Expression, exp_works_correctly)
+{
+	Expression e("exp 3");
+	ASSERT_EQ(std::exp(3), e.calculate());
 }
 
 TEST(Expression, number_starts_with_dot_is_read_correctly)
@@ -113,3 +146,11 @@ TEST(Expression, number_with_dot_in_the_end_is_read_correctly)
 	Expression e("9.");
 	ASSERT_EQ(e.calculate(), 9);
 }
+
+TEST(Expression, name_is_read_correctly)
+{
+	Expression e("asd");
+	EXPECT_EQ(e.calculate(), 5.0);
+}
+
+
