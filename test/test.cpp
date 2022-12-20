@@ -119,7 +119,7 @@ TEST(Expression, log_works_correctly)
 
 TEST(Expression, sin_works_correctly)
 {
-	Expression e("sin 3");
+	Expression e("sin(3)");
 	ASSERT_EQ(std::sin(3), e.calculate());
 }
 
@@ -149,8 +149,12 @@ TEST(Expression, number_with_dot_in_the_end_is_read_correctly)
 
 TEST(Expression, name_is_read_correctly)
 {
-	Expression e("asd");
+	Expression e("asd + qwe / _");
 	EXPECT_EQ(e.calculate(), 5.0);
 }
 
+TEST(Expression, expression_is_calculated_correctly) {
+	Expression e("2*3-4");
+	EXPECT_EQ(2, e.calculate());
+}
 

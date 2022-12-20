@@ -114,6 +114,8 @@ double Expression::calculate() {
 			numbers.pop();
 			a = numbers.top();
 			numbers.pop();
+			if (b == 0)
+				throw std::exception("divide by zero");
 			numbers.push(a / b);
 			break;
 

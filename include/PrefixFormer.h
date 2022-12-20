@@ -94,6 +94,8 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 			for (Token j = operators.top(); j.prio != TokenPrio::BRACKET_; j = operators.top()) {
 				operators.pop();
 				pForm.push(j);
+				if (operators.empty())
+					break;
 			}
 			operators.pop();
 			break;
@@ -104,6 +106,8 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 				for (Token j = operators.top(); j.prio > TokenPrio::SUM_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
+					if (operators.empty())
+						break;
 				}
 			}
 			operators.push(Token(TokenId::PLS, TokenPrio::SUM_, str + i, 1));
@@ -121,6 +125,8 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 				for (Token j = operators.top(); j.prio > TokenPrio::SUM_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
+					if (operators.empty())
+						break;
 				}
 			}
 
@@ -133,6 +139,8 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 				for (Token j = operators.top(); j.prio > TokenPrio::MUL_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
+					if (operators.empty())
+						break;
 				}
 			}
 			operators.push(Token(TokenId::MUL, TokenPrio::MUL_, str + i, 1));
@@ -144,6 +152,8 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 				for (Token j = operators.top(); j.prio > TokenPrio::MUL_; j = operators.top()) {
 					operators.pop();
 					pForm.push(j);
+					if (operators.empty())
+						break;
 				}
 			}
 			operators.push(Token(TokenId::DIV, TokenPrio::MUL_, str + i, 1));

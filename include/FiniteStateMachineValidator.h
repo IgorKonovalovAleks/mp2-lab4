@@ -37,7 +37,7 @@ int FSMValidator::isFunc(const char* s, int cur) {
 		if (name_log[i] == '\0' && findType(s[i]) != Chars::CHAR && findType(s[i]) != Chars::DECIMAL) {
 			push(cur);
 			push(cur + i - 1);
-			return i;
+			return i - 1;
 		}
 		if (s[i] != name_log[i]) {
 			break;
@@ -48,7 +48,7 @@ int FSMValidator::isFunc(const char* s, int cur) {
 		if (name_log[i] == '\0' && findType(s[i]) != Chars::CHAR && findType(s[i]) != Chars::DECIMAL) {
 			push(cur);
 			push(cur + i - 1);
-			return i;
+			return i - 1;
 		}
 		if (s[i] != name_sin[i]) {
 			break;
@@ -59,7 +59,7 @@ int FSMValidator::isFunc(const char* s, int cur) {
 		if (name_log[i] == '\0' && findType(s[i]) != Chars::CHAR && findType(s[i]) != Chars::DECIMAL) {
 			push(cur);
 			push(cur + i - 1);
-			return i;
+			return i - 1;
 		}
 		if (s[i] != name_exp[i]) {
 			break;
@@ -384,7 +384,7 @@ void FSMValidator::validate(const char* str, std::queue<int>& r) {
 		case States::START:
 			skip = isFunc(str + i, i);
 			if (skip > 0) {
-				//std::cout << "skip";
+				std::cout << "skip";
 				state = States::AFTER_OPERATOR;
 				i += skip;
 				skip = 0;
